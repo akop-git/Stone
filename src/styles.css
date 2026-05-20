@@ -1,0 +1,346 @@
+:root {
+  --bg: #f4f1ec;
+  --bg-deep: #e8e2d8;
+  --ink: #1a1815;
+  --ink-soft: #4a463f;
+  --ink-faint: #8b8579;
+  --line: #d8d1c4;
+  --accent: #8a3a2c;
+  --accent-soft: #c4a387;
+  --shadow-stone: 0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 24px -8px rgba(26,24,21,0.18), 0 2px 4px rgba(26,24,21,0.06);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: 'Fraunces', Georgia, serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(196,163,135,0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(138,58,44,0.06) 0%, transparent 40%);
+}
+
+button {
+  font-family: inherit;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+input, textarea {
+  font-family: inherit;
+  background: none;
+  border: none;
+  color: inherit;
+  outline: none;
+  width: 100%;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.header {
+  padding: 24px 24px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+}
+
+.header .logo {
+  font-family: 'Fraunces', serif;
+  font-size: 30px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.03em;
+}
+
+.header .date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-faint);
+}
+
+.page {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.tabs {
+  display: flex;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  padding: 8px;
+  gap: 8px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-faint);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.tab.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* ---- Canvas page ---- */
+.canvas {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  padding: 16px;
+}
+
+.task-stone {
+  position: absolute;
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-stone);
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+  min-width: 140px;
+  max-width: 220px;
+  transition: box-shadow 0.15s ease;
+}
+
+.task-stone:active {
+  cursor: grabbing;
+}
+
+.task-stone.dragging {
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 20px 40px -8px rgba(26,24,21,0.3), 0 4px 8px rgba(26,24,21,0.1);
+  z-index: 100;
+}
+
+.task-stone .title {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.task-stone .meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  margin-top: 6px;
+}
+
+.task-stone.scheduled .meta { color: var(--accent); }
+
+.fab {
+  position: fixed;
+  bottom: 88px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 28px;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(26,24,21,0.25);
+  z-index: 50;
+}
+
+/* ---- Modal ---- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,24,21,0.4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: var(--bg);
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px 16px 0 0;
+  padding: 24px;
+  animation: slide-up 0.25s ease;
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal h2 {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+}
+
+.modal input {
+  font-size: 18px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+
+.modal .actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 10px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-radius: 6px;
+}
+
+.btn-primary { background: var(--ink); color: var(--bg); }
+.btn-ghost { color: var(--ink-faint); }
+
+/* ---- Calendar page ---- */
+.calendar {
+  padding: 16px 0;
+}
+
+.cal-row {
+  display: flex;
+  min-height: 56px;
+  border-bottom: 1px dashed var(--line);
+  padding: 4px 16px;
+}
+
+.cal-row.over { background: rgba(138,58,44,0.04); }
+
+.cal-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  width: 48px;
+  flex-shrink: 0;
+  padding-top: 6px;
+}
+
+.cal-slot {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 4px;
+}
+
+.cal-task {
+  background: var(--accent);
+  color: var(--bg);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Fraunces', serif;
+  touch-action: none;
+  cursor: grab;
+  box-shadow: 0 2px 6px rgba(138,58,44,0.25);
+}
+
+.cal-task:active { cursor: grabbing; }
+
+.tray {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-deep);
+  border-top: 1px solid var(--line);
+  padding: 12px 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  min-height: 64px;
+}
+
+.tray-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  align-self: center;
+  padding-right: 4px;
+  flex-shrink: 0;
+}
+
+.tray-task {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Fraunces', serif;
+  white-space: nowrap;
+  touch-action: none;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--ink-faint);
+}
+
+.empty h3 {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  margin: 0 0 8px;
+}
+
+.empty p {
+  font-size: 14px;
+  margin: 0;
+}

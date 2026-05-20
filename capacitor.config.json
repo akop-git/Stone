@@ -1,0 +1,8 @@
+{
+  "appId": "com.rohith.stone",
+  "appName": "Stone",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false
+  }
+}
